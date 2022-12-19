@@ -14,7 +14,7 @@
         getNotes() {
           return this.notes;
         }
-        addNotes(note) {
+        addNote(note) {
           this.notes.push(note);
         }
         reset() {
@@ -25,9 +25,33 @@
     }
   });
 
+  // notesView.js
+  var require_notesView = __commonJS({
+    "notesView.js"(exports, module) {
+      var NotesView2 = class {
+        constructor(model2) {
+          this.model = model2;
+          this.mainContainerEl = document.querySelector("#main-container");
+        }
+        displayNotes() {
+          const notes = this.model.getNotes();
+          notes.forEach((note) => {
+            const noteEl = document.createElement("div");
+            noteEl.textContent = note;
+            noteEl.className = "note";
+            this.mainContainerEl.append(noteEl);
+          });
+        }
+      };
+      module.exports = NotesView2;
+    }
+  });
+
   // index.js
   var NotesModel = require_notesModel();
+  var NotesView = require_notesView();
   var model = new NotesModel();
-  model.addNotes("Go to the gym");
-  console.log(model.getNotes());
+  model.addNote("Go to the gym");
+  var view = new NotesView(model);
+  view.displayNotes();
 })();
