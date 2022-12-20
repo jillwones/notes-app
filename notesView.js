@@ -6,8 +6,9 @@ class NotesView {
 
     document.querySelector("#add-note-btn").addEventListener("click", () => {
       const newNote = document.querySelector("#add-note-input").value;
-      this.client.createNote(newNote);
-      this.addNewNote(newNote);
+      this.client.createNote(newNote, () => {
+        this.displayError();
+      }).then(() => this.displayNotesFromApi());
     });
   }
 
@@ -24,7 +25,6 @@ class NotesView {
       const noteEl = document.createElement("div");
       noteEl.textContent = note;
       noteEl.className = "note";
-      document.querySelector("#add-note-input").value = "";
       this.mainContainerEl.append(noteEl);
     });
   }
@@ -33,6 +33,7 @@ class NotesView {
     this.client.loadNotes((notes) => {
       this.model.setNotes(notes);
       this.displayNotes();
+      document.querySelector("#add-note-input").value = null;
     });
   }
 
@@ -40,6 +41,12 @@ class NotesView {
     this.model.addNote(note);
     this.displayNotes();
     document.querySelector("#add-note-input").value = null;
+  }
+
+  displayError() {
+    const errorMessage = document.createElement("div");
+    errorMessage.textContent = "Oops, something went wrong!";
+    this.mainContainerEl.append(errorMessage);
   }
 }
 

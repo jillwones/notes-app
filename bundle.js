@@ -38,8 +38,9 @@
           this.mainContainerEl = document.querySelector("#main-container");
           document.querySelector("#add-note-btn").addEventListener("click", () => {
             const newNote = document.querySelector("#add-note-input").value;
-            this.client.createNote(newNote);
-            this.addNewNote(newNote);
+            this.client.createNote(newNote, () => {
+              this.displayError();
+            }).then(() => this.displayNotesFromApi());
           });
         }
         displayNotes() {
@@ -51,7 +52,6 @@
             const noteEl = document.createElement("div");
             noteEl.textContent = note;
             noteEl.className = "note";
-            document.querySelector("#add-note-input").value = "";
             this.mainContainerEl.append(noteEl);
           });
         }
@@ -59,12 +59,18 @@
           this.client.loadNotes((notes) => {
             this.model.setNotes(notes);
             this.displayNotes();
+            document.querySelector("#add-note-input").value = null;
           });
         }
         addNewNote(note) {
           this.model.addNote(note);
           this.displayNotes();
           document.querySelector("#add-note-input").value = null;
+        }
+        displayError() {
+          const errorMessage = document.createElement("div");
+          errorMessage.textContent = "Oops, something went wrong!";
+          this.mainContainerEl.append(errorMessage);
         }
       };
       module.exports = NotesView2;
@@ -75,21 +81,19 @@
   var require_notesClient = __commonJS({
     "notesClient.js"(exports, module) {
       var NotesClient2 = class {
-        loadNotes(callback) {
-          fetch("http://localhost:3000/notes").then((response) => response.json()).then((data) => {
-            callback(data);
-          });
+        loadNotes(callback, errorCallback = () => {
+        }) {
+          fetch("http://localhost:3000/notes").then((response) => response.json()).then((data) => callback(data)).catch(() => errorCallback());
         }
-        createNote(note) {
+        createNote(note, errorCallback = () => {
+        }) {
           return fetch("http://localhost:3000/notes", {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
             },
             body: JSON.stringify({ content: note })
-          }).then((response) => response.json()).catch((error) => {
-            return null;
-          });
+          }).then((response) => response.json()).catch(() => errorCallback());
         }
       };
       module.exports = NotesClient2;
@@ -103,5 +107,10 @@
   var client = new NotesClient();
   var model = new NotesModel();
   var view = new NotesView(model, client);
-  view.displayNotesFromApi();
+  client.loadNotes((notes) => {
+    model.setNotes(notes);
+    view.displayNotes();
+  }, () => {
+    view.displayError();
+  });
 })();
