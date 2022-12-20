@@ -3,9 +3,11 @@
  */
 
 const fs = require("fs");
-
+require("jest-fetch-mock").enableMocks();
 const NotesView = require("./notesView");
 const NotesModel = require("./notesModel");
+const NotesClient = require("./notesClient");
+const { doesNotMatch } = require("assert");
 
 describe("NotesView", () => {
   beforeEach(() => {
@@ -32,6 +34,21 @@ describe("NotesView", () => {
     input.value = "Another note";
     button.click();
     expect(document.querySelectorAll("div.note").length).toEqual(2);
-    expect(document.querySelectorAll("div.note")[0].textContent).toEqual("Latest note")
-  })
+    expect(document.querySelectorAll("div.note")[0].textContent).toEqual(
+      "Latest note"
+    );
+  });
+
+  it("returns notes from an API", () => {
+    const model = new NotesModel();
+    const client = new NotesClient();
+    const view = new NotesView(model, client);
+
+    view.displayNotesFromApi();
+
+    expect(document.querySelectorAll("div.note").length).toEqual(2);
+    expect(document.querySelectorAll("div.note")[0].textContent).toEqual(
+      "Latest note"
+    );
+  });
 });
