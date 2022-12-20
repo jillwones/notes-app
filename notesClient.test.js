@@ -16,4 +16,25 @@ describe("NotesClient", () => {
       done();
     });
   });
+
+  it("sends a POST request to create a new note", () => {
+    // Arrange
+    const client = new NotesClient();
+    const note = "Test note";
+    const expectedResponse = { content: note };
+    fetch.mockResponseOnce(JSON.stringify(expectedResponse));
+
+    // Act
+    const result = client.createNote(note);
+
+    // Assert
+    expect(result).resolves.toMatchObject(expectedResponse);
+    expect(fetch).toHaveBeenCalledWith("http://localhost:3000/notes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ content: note }),
+    });
+  });
 });

@@ -26,7 +26,8 @@ describe("NotesView", () => {
 
   it("adds a new note", () => {
     const model = new NotesModel();
-    const view = new NotesView(model);
+    const client = new NotesClient();
+    const view = new NotesView(model, client);
     const input = document.querySelector("#add-note-input");
     input.value = "Latest note";
     const button = document.querySelector("#add-note-btn");
@@ -41,14 +42,14 @@ describe("NotesView", () => {
 
   it("returns notes from an API", () => {
     const model = new NotesModel();
-    const client = new NotesClient();
-    const view = new NotesView(model, client);
+    const clientMock = {
+      loadNotes: (callback) => {
+        callback(["note123"]);
+      },
+    };
 
+    const view = new NotesView(model, clientMock);
     view.displayNotesFromApi();
-
-    expect(document.querySelectorAll("div.note").length).toEqual(2);
-    expect(document.querySelectorAll("div.note")[0].textContent).toEqual(
-      "Latest note"
-    );
+    expect(document.querySelector("div.note").textContent).toEqual('note123')
   });
 });

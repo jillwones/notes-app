@@ -6,16 +6,27 @@ class NotesView {
 
     document.querySelector("#add-note-btn").addEventListener("click", () => {
       const newNote = document.querySelector("#add-note-input").value;
+      this.client.createNote(newNote);
       this.addNewNote(newNote);
     });
   }
 
   displayNotes() {
+    // Clear all previous notes
+    document.querySelectorAll(".note").forEach((element) => {
+      element.remove();
+    });
+
     const notes = this.model.getNotes();
-    const noteEl = document.createElement("div");
-    noteEl.textContent = notes[notes.length - 1];
-    noteEl.className = "note";
-    this.mainContainerEl.append(noteEl);
+
+    // For each note, create and append a new element on the main container
+    notes.forEach((note) => {
+      const noteEl = document.createElement("div");
+      noteEl.textContent = note;
+      noteEl.className = "note";
+      document.querySelector("#add-note-input").value = "";
+      this.mainContainerEl.append(noteEl);
+    });
   }
 
   displayNotesFromApi() {
