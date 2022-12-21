@@ -38,12 +38,14 @@
           this.mainContainerEl = document.querySelector("#main-container");
           document.querySelector("#add-note-btn").addEventListener("click", () => {
             const newNote = document.querySelector("#add-note-input").value;
-            this.client.createNote(newNote, () => {
-              this.displayError();
-            }).then(() => this.displayNotesFromApi());
+            this.addNewNote(newNote);
+          });
+          document.querySelector("#reset-btn").addEventListener("click", () => {
+            this.resetNotes();
           });
         }
         displayNotes() {
+          document.querySelector("#add-note-input").value = null;
           document.querySelectorAll(".note").forEach((element) => {
             element.remove();
           });
@@ -56,20 +58,23 @@
           });
         }
         displayNotesFromApi() {
-          this.client.loadNotes((notes) => {
-            this.model.setNotes(notes);
+          this.client.loadNotes((response) => {
+            this.model.setNotes(response);
             this.displayNotes();
-            document.querySelector("#add-note-input").value = null;
           });
         }
-        addNewNote(note) {
-          this.model.addNote(note);
-          this.displayNotes();
-          document.querySelector("#add-note-input").value = null;
+        addNewNote(newNote) {
+          this.client.createNote(newNote, () => {
+            this.displayError();
+          }).then(() => this.displayNotesFromApi());
+        }
+        resetNotes() {
+          this.client.reset((error) => this.displayError(error)).then(() => this.displayNotesFromApi());
         }
         displayError() {
           const errorMessage = document.createElement("div");
           errorMessage.textContent = "Oops, something went wrong!";
+          errorMessage.className = "error";
           this.mainContainerEl.append(errorMessage);
         }
       };
@@ -94,6 +99,11 @@
             },
             body: JSON.stringify({ content: note })
           }).then((response) => response.json()).catch(() => errorCallback());
+        }
+        reset(errorCallback) {
+          return fetch("http://localhost:3000/notes", {
+            method: "DELETE"
+          }).catch(() => errorCallback());
         }
       };
       module.exports = NotesClient2;

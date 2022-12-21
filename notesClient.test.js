@@ -37,4 +37,8 @@ describe("NotesClient", () => {
       body: JSON.stringify({ content: note }),
     });
   });
+
+  it("deletes all notes with a DELETE request", () => {
+    //
+  });
 });
