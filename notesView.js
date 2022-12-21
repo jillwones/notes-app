@@ -15,15 +15,16 @@ class NotesView {
   }
 
   displayNotes() {
+    // clears input box
     document.querySelector("#add-note-input").value = null;
-    // Clear all previous notes
+    // clear all previous notes
     document.querySelectorAll(".note").forEach((element) => {
       element.remove();
     });
 
     const notes = this.model.getNotes();
 
-    // For each note, create and append a new element on the main container
+    // for each note, create and append a new element on the main container
     notes.forEach((note) => {
       const noteEl = document.createElement("div");
       // this will check for any emoji text (:smiley:) and convert it to the emoji
