@@ -23,6 +23,18 @@ class NotesClient {
       method: "DELETE",
     }).catch(() => errorCallback());
   }
+
+  emojify(note, callback) {
+    return fetch("https://makers-emojify.herokuapp.com", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: note }),
+    })
+      .then((response) => response.json())
+      .then((data) => callback(data));
+  }
 }
 
 module.exports = NotesClient;

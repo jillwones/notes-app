@@ -26,7 +26,10 @@ class NotesView {
     // For each note, create and append a new element on the main container
     notes.forEach((note) => {
       const noteEl = document.createElement("div");
-      noteEl.textContent = note;
+      // this will check for any emoji text (:smiley:) and convert it to the emoji
+      this.client.emojify(note, (response) => {
+        noteEl.textContent = response.emojified_text;
+      });
       noteEl.className = "note";
       this.mainContainerEl.append(noteEl);
     });
@@ -49,7 +52,7 @@ class NotesView {
 
   resetNotes() {
     this.client
-      .reset((error) => this.displayError(error))
+      .reset(() => this.displayError())
       .then(() => this.displayNotesFromApi());
   }
 
