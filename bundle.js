@@ -71,7 +71,7 @@
           }).then(() => this.displayNotesFromApi());
         }
         resetNotes() {
-          this.client.reset((error) => this.displayError(error)).then(() => this.displayNotesFromApi());
+          this.client.reset(() => this.displayError()).then(() => this.displayNotesFromApi());
         }
         displayError() {
           const errorMessage = document.createElement("div");
